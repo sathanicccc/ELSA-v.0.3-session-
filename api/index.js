@@ -1,10 +1,9 @@
 const { default: makeWASocket, useMultiFileAuthState, delay, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
 const pino = require("pino");
+const QRCode = require('qrcode');
 
 module.exports = async (req, res) => {
     const { number } = req.query;
-    if (!number) return res.status(400).json({ error: "Phone number required!" });
-
     const { state, saveCreds } = await useMultiFileAuthState('/tmp/elsa-' + Date.now());
 
     try {
@@ -13,15 +12,28 @@ module.exports = async (req, res) => {
             version,
             auth: state,
             logger: pino({ level: "silent" }),
-            browser: ["ELSA-V.0.3", "Chrome", "3.0.0"]
+            browser: ["ELSA-V.0.3", "Safari", "3.0.0"]
         });
 
-        await delay(3000); 
-        const cleanNumber = number.replace(/[^0-9]/g, '');
-        const code = await sock.requestPairingCode(cleanNumber);
-        
-        return res.status(200).json({ code: code });
+        // 1. QR Code Logic
+        sock.ev.on('connection.update', async (update) => {
+            const { qr } = update;
+            if (qr) {
+                const qrImage = await QRCode.toDataURL(qr);
+                // QR image frontend-ilekku ayakkunnu
+                return res.status(200).json({ qr: qrImage });
+            }
+        });
+
+        // 2. Pairing Code Logic (If number exists)
+        if (number) {
+            await delay(3500); 
+            const cleanNumber = number.replace(/[^0-9]/g, '');
+            const code = await sock.requestPairingCode(cleanNumber);
+            return res.status(200).json({ code: code });
+        }
+
     } catch (err) {
-        return res.status(500).json({ error: "WhatsApp Server Busy. Try again!" });
+        return res.status(500).json({ error: "API Error" });
     }
 };
