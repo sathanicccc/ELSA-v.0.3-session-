@@ -1,39 +1,71 @@
-const { default: makeWASocket, useMultiFileAuthState, delay, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
+const { 
+    default: makeWASocket, 
+    useMultiFileAuthState, 
+    delay, 
+    fetchLatestBaileysVersion, 
+    makeCacheableSignalKeyStore 
+} = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const QRCode = require('qrcode');
+const express = require('express');
+const path = require('path');
 
-module.exports = async (req, res) => {
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// 'public' ഫോൾഡറിലെ ഫയലുകൾ (HTML, CSS) ലോഡ് ചെയ്യാൻ
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/api', async (req, res) => {
     const { number } = req.query;
-    const { state, saveCreds } = await useMultiFileAuthState('/tmp/elsa-' + Date.now());
+    
+    // Koyeb-ൽ സെഷൻ പെർമനന്റ് ആയി സേവ് ചെയ്യാൻ സാധിക്കും
+    const { state, saveCreds } = await useMultiFileAuthState('./session-data');
 
     try {
         const { version } = await fetchLatestBaileysVersion();
         const sock = makeWASocket({
             version,
-            auth: state,
+            auth: {
+                creds: state.creds,
+                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
+            },
             logger: pino({ level: "silent" }),
-            browser: ["ELSA-V.0.3", "Safari", "3.0.0"]
+            browser: ["ELSA-V.0.3", "Chrome", "1.0.0"]
         });
 
         // 1. QR Code Logic
-        sock.ev.on('connection.update', async (update) => {
-            const { qr } = update;
-            if (qr) {
-                const qrImage = await QRCode.toDataURL(qr);
-                // QR image frontend-ilekku ayakkunnu
-                return res.status(200).json({ qr: qrImage });
-            }
-        });
+        if (!number) {
+            const qrTimeout = setTimeout(() => {
+                if (!res.headersSent) res.status(504).json({ error: "QR Timeout" });
+            }, 20000);
 
-        // 2. Pairing Code Logic (If number exists)
-        if (number) {
-            await delay(3500); 
+            sock.ev.on('connection.update', async (update) => {
+                const { qr } = update;
+                if (qr) {
+                    clearTimeout(qrTimeout);
+                    const qrImage = await QRCode.toDataURL(qr);
+                    if (!res.headersSent) res.json({ qr: qrImage });
+                }
+            });
+        } 
+        // 2. Pairing Code Logic
+        else {
+            await delay(5000);
             const cleanNumber = number.replace(/[^0-9]/g, '');
             const code = await sock.requestPairingCode(cleanNumber);
-            return res.status(200).json({ code: code });
+            if (!res.headersSent) res.json({ code: code });
         }
 
+        sock.ev.on('creds.update', saveCreds);
+
     } catch (err) {
-        return res.status(500).json({ error: "API Error" });
+        console.error(err);
+        if (!res.headersSent) res.status(500).json({ error: "Internal Server Error" });
     }
-};
+});
+
+// സർവർ സ്റ്റാർട്ട് ചെയ്യുന്നു
+app.listen(PORT, () => {
+    console.log(`ELSA-V.0.3 is running on port ${PORT}`);
+});
