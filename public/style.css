@@ -1,0 +1,161 @@
+/* SATHAN-MD SESSION GENERATOR - CUSTOM STYLES */
+
+:root {
+    --green: #00ff00;
+    --red: #ff3333;
+    --bg-dark: #050505;
+    --card-bg: rgba(255, 255, 255, 0.03);
+}
+
+body {
+    background-color: var(--bg-dark);
+    /* Matrix-like radial glow */
+    background-image: radial-gradient(circle at center, #0a1f0a 0%, #050505 100%);
+    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg);
+    padding: 40px 25px;
+    border-radius: 24px;
+    border: 1px solid rgba(0, 255, 0, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+/* Badge Style */
+.badge {
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--green);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Logo Section */
+h1 {
+    font-size: 48px;
+    letter-spacing: 6px;
+    margin: 25px 0 5px;
+    font-weight: 900;
+}
+
+h1 span {
+    color: var(--red);
+    text-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+}
+
+.sub-text {
+    color: #888;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 35px;
+    text-transform: uppercase;
+}
+
+/* Input & Button */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+input {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+    color: white;
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+.get-btn {
+    background: var(--green);
+    color: black;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.get-btn:hover {
+    background: white;
+    box-shadow: 0 0 25px var(--green);
+    transform: translateY(-2px);
+}
+
+/* Pairing Code Result Box */
+#result-box {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(0, 255, 0, 0.04);
+    border: 2px dashed rgba(0, 255, 0, 0.4);
+    border-radius: 15px;
+}
+
+.code-display {
+    font-size: 36px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 8px;
+    margin: 15px 0;
+    text-shadow: 0 0 20px var(--green);
+}
+
+/* Footer Section */
+.footer {
+    margin-top: 45px;
+    font-size: 10px;
+    color: #666;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+}
+
+.footer span {
+    color: var(--green);
+    font-weight: 700;
+}
+
+/* Loader Spinner */
+.loader {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid var(--green);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
