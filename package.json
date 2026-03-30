@@ -1,0 +1,10 @@
+{
+  "name": "sathan-pair-server",
+  "version": "1.0.0",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.6.0",
+    "pino": "^8.14.1",
+    "qrcode": "^1.5.3"
+  }
+}
+
