@@ -1,10 +1,9 @@
 {
-  "name": "sathan-pair-server",
-  "version": "1.0.0",
+  "name": "elsa-v03-session",
+  "version": "1.0.3",
+  "main": "api/index.js",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
-    "pino": "^8.14.1",
-    "qrcode": "^1.5.3"
+    "pino": "^8.14.1"
   }
 }
-
