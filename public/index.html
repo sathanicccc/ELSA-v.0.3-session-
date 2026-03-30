@@ -3,223 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SATHAN-MD SESSION GENERATOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>ELSA-V.0.3 SESSION GENERATOR</title>
     <style>
-        :root {
-            --green: #00ff00;
-            --red: #ff3333;
-            --bg: #050505;
-        }
-
-        body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at center, #0a1f0a 0%, #050505 100%);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .container {
-            text-align: center;
-            width: 90%;
-            max-width: 450px;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 40px 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 255, 0, 0.1);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .header .badge {
-            background: rgba(0, 255, 0, 0.1);
-            color: var(--green);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 11px;
-            border: 1px solid var(--green);
-            letter-spacing: 1px;
-        }
-
-        h1 {
-            font-size: 42px;
-            letter-spacing: 4px;
-            margin: 20px 0 5px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        h1 span { color: var(--red); }
-
-        .sub-text {
-            color: #888;
-            font-size: 11px;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-        }
-
-        /* Input Section */
-        .input-group {
-            margin: 20px 0;
-        }
-
-        input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
-            color: white;
-            width: 80%;
-            padding: 15px;
-            border-radius: 10px;
-            outline: none;
-            text-align: center;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            border-color: var(--green);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-        }
-
-        .get-btn {
-            background: var(--green);
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 85%;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .get-btn:hover {
-            background: white;
-            box-shadow: 0 0 20px var(--green);
-        }
-
-        /* Result Code Box */
-        #result-box {
-            display: none;
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(0, 255, 0, 0.05);
-            border: 2px dashed var(--green);
-            border-radius: 10px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .code-display {
-            font-size: 32px;
-            font-weight: 900;
-            color: white;
-            letter-spacing: 5px;
-            margin: 10px 0;
-            text-shadow: 0 0 10px var(--green);
-        }
-
-        .footer {
-            margin-top: 40px;
-            font-size: 10px;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .footer span { color: var(--green); font-weight: bold; }
-
-        /* Loading Spinner */
-        .loader {
-            display: none;
-            border: 3px solid #333;
-            border-top: 3px solid var(--green);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        :root { --neon: #00ff00; --accent: #ff3333; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { text-align: center; background: rgba(255,255,255,0.02); padding: 40px; border-radius: 15px; border: 1px solid rgba(0,255,0,0.1); width: 90%; max-width: 400px; }
+        .badge { color: var(--neon); border: 1px solid var(--neon); padding: 5px 10px; border-radius: 20px; font-size: 10px; }
+        h1 { font-size: 40px; margin: 20px 0; letter-spacing: 3px; }
+        h1 span { color: var(--accent); }
+        input { background: #111; border: 1px solid #333; color: white; width: 100%; padding: 15px; border-radius: 8px; outline: none; margin-bottom: 10px; text-align: center; }
+        .btn { background: var(--neon); color: black; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #result { display: none; margin-top: 20px; padding: 15px; border: 2px dashed var(--neon); border-radius: 8px; }
+        .code { font-size: 28px; font-weight: 900; letter-spacing: 5px; }
+        .loader { display: none; margin: 10px auto; border: 3px solid #333; border-top: 3px solid var(--neon); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div class="box">
+        <span class="badge">✦ SESSION GENERATOR</span>
+        <h1>ELSA-<span>V.0.3</span></h1>
+        <p style="color:#888; font-size:12px;">WHATSAPP BOT PLATFORM</p>
+        
+        <input type="number" id="num" placeholder="917025xxxxxx">
+        <button class="btn" onclick="getCode()" id="btn">GET PAIRING CODE</button>
+        <div class="loader" id="loader"></div>
 
-    <div class="container">
-        <div class="header">
-            <span class="badge">✦ SESSION GENERATOR</span>
-            <h1>SATHAN-<span>MD</span></h1>
-            <p class="sub-text">WHATSAPP BOT PLATFORM</p>
-        </div>
-
-        <div class="input-group">
-            <input type="number" id="phone-input" placeholder="e.g. 917025xxxxxx (With Country Code)">
-            <button class="get-btn" onclick="getPairingCode()" id="submit-btn">Get Pairing Code</button>
-            <div class="loader" id="loader"></div>
-        </div>
-
-        <div id="result-box">
-            <p style="font-size: 12px; color: #888; margin: 0;">YOUR PAIRING CODE:</p>
-            <div class="code-display" id="pairing-code">---- ----</div>
-            <p style="font-size: 10px; color: var(--green);">Copy this code and enter it in WhatsApp Linked Devices</p>
-        </div>
-
-        <div class="footer">
-            <p>DESIGNED BY <span>SATHAN</span><br>SATHAN-MD v2.0 • POWERED BY VERCEL</p>
+        <div id="result">
+            <p style="font-size:10px; color:#888;">YOUR CODE:</p>
+            <div class="code" id="pair-code">---- ----</div>
+            <p style="font-size:10px; color:var(--neon);">Enter this in WhatsApp Linked Devices</p>
         </div>
     </div>
 
     <script>
-        async function getPairingCode() {
-            const num = document.getElementById('phone-input').value;
-            const btn = document.getElementById('submit-btn');
+        async function getCode() {
+            const num = document.getElementById('num').value;
+            const result = document.getElementById('result');
+            const btn = document.getElementById('btn');
             const loader = document.getElementById('loader');
-            const resultBox = document.getElementById('result-box');
-            const codeDisplay = document.getElementById('pairing-code');
 
-            if (!num || num.length < 10) {
-                alert("Please enter a valid phone number with country code (e.g. 91...)");
-                return;
-            }
-
-            // UI Update
+            if(!num) return alert("Enter number with country code!");
+            
             btn.style.display = "none";
             loader.style.display = "block";
-            resultBox.style.display = "none";
 
             try {
-                // IMPORTANT: Change '/api' to your actual Vercel API path if different
-                const response = await fetch(`/api?number=${num}`);
-                const data = await response.json();
-
+                const res = await fetch(`/api?number=${num}`);
+                const data = await res.json();
                 loader.style.display = "none";
                 btn.style.display = "block";
 
-                if (data.code) {
-                    resultBox.style.display = "block";
-                    codeDisplay.innerText = data.code;
-                    // Auto-copy to clipboard
+                if(data.code) {
+                    result.style.display = "block";
+                    document.getElementById('pair-code').innerText = data.code;
                     navigator.clipboard.writeText(data.code);
-                    alert("Code Generated & Copied!");
+                    alert("Code Copied!");
                 } else {
-                    alert("Error: " + (data.error || "Failed to generate code. Try again."));
+                    alert("Error: " + data.error);
                 }
-            } catch (err) {
+            } catch (e) {
                 loader.style.display = "none";
                 btn.style.display = "block";
-                alert("Connection Error. Make sure your Vercel API is running.");
-                console.error(err);
+                alert("API connection failed!");
             }
         }
     </script>
