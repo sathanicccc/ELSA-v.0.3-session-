@@ -1,27 +1,33 @@
-const { default: makeWASocket, useMultiFileAuthState, delay } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, useMultiFileAuthState, delay, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     const { number } = req.query;
-    if (!number) return res.status(400).json({ error: "Number required" });
+    if (!number) return res.status(400).json({ error: "Number required! Example: ?number=917025xxxxxx" });
 
-    // Temporary session storage for Vercel (Note: Vercel is Read-only, so this is for one-time pairing)
-    const { state, saveCreds } = await useMultiFileAuthState('/tmp/session');
+    // Vercel read-only aayaathukondu /tmp folder upayogikkunnu
+    const { state, saveCreds } = await useMultiFileAuthState('/tmp/elsa-session-' + Date.now());
 
     try {
+        const { version } = await fetchLatestBaileysVersion();
         const sock = makeWASocket({
+            version,
             auth: state,
             logger: pino({ level: "silent" }),
-            printQRInTerminal: false
+            printQRInTerminal: false,
+            browser: ["ELSA-V.0.3", "Chrome", "1.0.0"]
         });
 
+        // Registration check and Code request
         if (!sock.authState.creds.registered) {
-            await delay(1500);
+            await delay(2000); // 2 second wait for stability
             const cleanNumber = number.replace(/[^0-9]/g, '');
             const code = await sock.requestPairingCode(cleanNumber);
+            
             return res.status(200).json({ code: code });
         }
     } catch (err) {
-        return res.status(500).json({ error: "Pairing Failed" });
+        console.error(err);
+        return res.status(500).json({ error: "Connection error. Please refresh and try again." });
     }
-}
+};
