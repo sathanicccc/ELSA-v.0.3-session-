@@ -1,9 +1,17 @@
 {
   "name": "elsa-v03-session",
   "version": "1.0.3",
+  "description": "Advanced WhatsApp Session Generator for ELSA-MD",
   "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
-    "pino": "^8.14.1"
+    "pino": "^8.14.1",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
