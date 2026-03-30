@@ -3,71 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELSA-V.0.3 SESSION GENERATOR</title>
-    <style>
-        :root { --neon: #00ff00; --accent: #ff3333; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { text-align: center; background: rgba(255,255,255,0.02); padding: 40px; border-radius: 15px; border: 1px solid rgba(0,255,0,0.1); width: 90%; max-width: 400px; }
-        .badge { color: var(--neon); border: 1px solid var(--neon); padding: 5px 10px; border-radius: 20px; font-size: 10px; }
-        h1 { font-size: 40px; margin: 20px 0; letter-spacing: 3px; }
-        h1 span { color: var(--accent); }
-        input { background: #111; border: 1px solid #333; color: white; width: 100%; padding: 15px; border-radius: 8px; outline: none; margin-bottom: 10px; text-align: center; }
-        .btn { background: var(--neon); color: black; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #result { display: none; margin-top: 20px; padding: 15px; border: 2px dashed var(--neon); border-radius: 8px; }
-        .code { font-size: 28px; font-weight: 900; letter-spacing: 5px; }
-        .loader { display: none; margin: 10px auto; border: 3px solid #333; border-top: 3px solid var(--neon); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
+    <title>ELSA-V.0.3 | SESSION</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="box">
-        <span class="badge">✦ SESSION GENERATOR</span>
-        <h1>ELSA-<span>V.0.3</span></h1>
-        <p style="color:#888; font-size:12px;">WHATSAPP BOT PLATFORM</p>
-        
-        <input type="number" id="num" placeholder="917025xxxxxx">
-        <button class="btn" onclick="getCode()" id="btn">GET PAIRING CODE</button>
-        <div class="loader" id="loader"></div>
+    <canvas id="matrix"></canvas>
+    <div class="container">
+        <div class="glass-card">
+            <h1 class="title">ELSA-<span>V.0.3</span></h1>
+            <p class="desc">ADVANCED SESSION GENERATOR</p>
+            
+            <div class="input-group">
+                <input type="number" id="number" placeholder="917025xxxxxx">
+                <button onclick="getPairCode()" id="btn">
+                    <span id="txt">GET CODE</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+            </div>
 
-        <div id="result">
-            <p style="font-size:10px; color:#888;">YOUR CODE:</p>
-            <div class="code" id="pair-code">---- ----</div>
-            <p style="font-size:10px; color:var(--neon);">Enter this in WhatsApp Linked Devices</p>
+            <div id="result" class="result-box">
+                <p>PAIRING CODE:</p>
+                <h2 id="pair-display">---- ----</h2>
+                <button class="copy" onclick="copy()">COPY</button>
+            </div>
+
+            <p class="footer">POWERED BY <span>SATHAN</span></p>
         </div>
     </div>
-
-    <script>
-        async function getCode() {
-            const num = document.getElementById('num').value;
-            const result = document.getElementById('result');
-            const btn = document.getElementById('btn');
-            const loader = document.getElementById('loader');
-
-            if(!num) return alert("Enter number with country code!");
-            
-            btn.style.display = "none";
-            loader.style.display = "block";
-
-            try {
-                const res = await fetch(`/api?number=${num}`);
-                const data = await res.json();
-                loader.style.display = "none";
-                btn.style.display = "block";
-
-                if(data.code) {
-                    result.style.display = "block";
-                    document.getElementById('pair-code').innerText = data.code;
-                    navigator.clipboard.writeText(data.code);
-                    alert("Code Copied!");
-                } else {
-                    alert("Error: " + data.error);
-                }
-            } catch (e) {
-                loader.style.display = "none";
-                btn.style.display = "block";
-                alert("API connection failed!");
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
