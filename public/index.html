@@ -3,33 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELSA-V.0.3 | SESSION</title>
+    <title>ELSA-V.0.3 | DUAL SESSION</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="matrix"></canvas>
-    <div class="container">
-        <div class="glass-card">
-            <h1 class="title">ELSA-<span>V.0.3</span></h1>
-            <p class="desc">ADVANCED SESSION GENERATOR</p>
-            
-            <div class="input-group">
-                <input type="number" id="number" placeholder="917025xxxxxx">
-                <button onclick="getPairCode()" id="btn">
-                    <span id="txt">GET CODE</span>
-                    <div class="loader" id="loader"></div>
+    <div class="bg-animation"></div>
+    <div class="glass-box">
+        <div class="header">
+            <div class="status-dot"></div>
+            <span class="version-tag">ELSA V.0.3 OFFICIAL</span>
+        </div>
+        
+        <h1 class="logo">ELSA-<span>MD</span></h1>
+        <p class="tagline">PREMIUM DUAL SESSION GENERATOR</p>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('pairing')">PAIRING CODE</button>
+            <button class="tab-btn" onclick="openTab('qr')">QR CODE</button>
+        </div>
+
+        <div id="pairing-tab" class="tab-content active">
+            <div class="input-area">
+                <input type="number" id="phone" placeholder="917025xxxxxx" autocomplete="off">
+                <button onclick="getPairingCode()" id="gen-btn">
+                    <span id="btn-text">GET PAIRING CODE</span>
+                    <div class="spinner" id="loader"></div>
                 </button>
             </div>
-
-            <div id="result" class="result-box">
-                <p>PAIRING CODE:</p>
-                <h2 id="pair-display">---- ----</h2>
-                <button class="copy" onclick="copy()">COPY</button>
+            <div id="result-box" class="result-card">
+                <p>YOUR PAIRING CODE</p>
+                <div class="code-text" id="display-code">---- ----</div>
+                <button class="copy-btn" onclick="copyCode()">COPY CODE</button>
             </div>
+        </div>
 
-            <p class="footer">POWERED BY <span>SATHAN</span></p>
+        <div id="qr-tab" class="tab-content">
+            <div class="qr-area">
+                <button onclick="getQRCode()" id="qr-btn">
+                    <span id="qr-btn-text">GENERATE QR CODE</span>
+                    <div class="spinner" id="qr-loader"></div>
+                </button>
+                <div id="qr-result-box" class="result-card">
+                    <img id="qr-display" src="" alt="QR Code">
+                    <p class="qr-tagline">Scan with Linked Devices</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>DESIGNED BY <span class="owner">SATHAN</span></p>
+            <div class="links">
+                <a href="https://github.com/sathanicccc">GITHUB</a> • 
+                <a href="#">WHATSAPP</a>
+            </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function openTab(tabName) {
+            var i, tabContent, tabBtns;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            tabBtns = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove("active");
+            }
+            document.getElementById(tabName + "-tab").classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        async function getPairingCode() {
+            const num = document.getElementById('phone').value;
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result-box');
+
+            if(!num || num.length < 10) return alert("Enter valid number with country code!");
+
+            btnText.style.display = "none";
+            loader.style.display = "block";
+            result.classList.remove('show');
+
+            try {
+                const res = await fetch(`/api?number=${num}`);
+                const data = await res.json();
+                
+                loader.style.display = "none";
+                btnText.style.display = "block";
+
+                if(data.code) {
+                    result.classList.add('show');
+                    document.getElementById('display-code').innerText = data.code;
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch (e) {
+                loader.style.display = "none";
+                btnText.style.display = "block";
+                alert("API Connection Failed! Check Vercel Logs.");
+            }
+        }
+
+        async function getQRCode() {
+            const btnText = document.getElementById('qr-btn-text');
+            const loader = document.getElementById('qr-loader');
+            const result = document.getElementById('qr-result-box');
+            const qrDisplay = document.getElementById('qr-display');
+
+            btnText.style.display = "none";
+            loader.style.display = "block";
+            result.classList.remove('show');
+
+            try {
+                const res = await fetch(`/api`);
+                const data = await res.json();
+                
+                loader.style.display = "none";
+                btnText.style.display = "block";
+
+                if(data.qr) {
+                    result.classList.add('show');
+                    qrDisplay.src = data.qr;
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch (e) {
+                loader.style.display = "none";
+                btnText.style.display = "block";
+                alert("API Connection Failed! Check Vercel Logs.");
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById('display-code').innerText;
+            navigator.clipboard.writeText(code);
+            alert("Code Copied!");
+        }
+    </script>
 </body>
 </html>
