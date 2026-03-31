@@ -2,9 +2,9 @@
 
 <img src="https://capsule-render.vercel.app/render?type=waving&color=00ff88&height=120&section=header&text=ELSA-V.0.3%20SESSION&fontSize=50&animation=fadeIn" width="100%"/>
 
-<img src="https://telegra.ph/file/your-logo-link.jpg" width="180" height="180" style="border-radius: 50%; border: 3px solid #00ff88; box-shadow: 0 0 20px #00ff88; margin-top: 20px;">
+<img src="https://i.ibb.co/dy3fcM8/1000013317-01.jpg" width="180" height="180" style="border-radius: 50%; border: 3px solid #00ff88; box-shadow: 0 0 20px #00ff88; margin-top: 20px;">
 
-# ⚡ SATHANIC OS HUB ⚡
+#  ELSA V.0.3
 > **Advanced WhatsApp Session Generator for ELSA-MD**
 
 <p align="center">
@@ -40,7 +40,7 @@
 
 <div align="center">
 <a href="https://github.com/SATHANICCCC"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>
-<a href="https://wa.me/917025XXXXXX"><img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
+<a href="https://wa.me/919778158839"><img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
 </div>
 
 ---
