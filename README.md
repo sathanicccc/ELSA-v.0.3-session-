@@ -45,5 +45,8 @@
 
 ---
 
-<img src="https://capsule-render.vercel.app/render?type=waving&color=00ff88&height=100&section=footer" width="100%"/>
+<p align="center">
+  <img src="https://img.shields.io/badge/ELSA--V.0.3--OFFICIAL-00ff99?style=flat-square" width="25%">
+</p>
+
 </div>
