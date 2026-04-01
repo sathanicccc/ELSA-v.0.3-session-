@@ -3,12 +3,13 @@ const {
     useMultiFileAuthState, 
     delay, 
     fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore 
+    makeCacheableSignalKeyStore,
+    DisconnectReason
 } = require("@whiskeysockets/baileys");
 const pino = require("pino");
-const QRCode = require('qrcode');
 const express = require('express');
 const path = require('path');
+const fs = require('fs-extra');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -17,7 +18,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api', async (req, res) => {
     const { number } = req.query;
-    const { state, saveCreds } = await useMultiFileAuthState('./session-data');
+    if (!number) return res.status(400).json({ error: "Number is required!" });
+
+    // 🛠️ പഴയ സെഷൻ ഡാറ്റ ഉണ്ടെങ്കിൽ അത് ക്ലിയർ ചെയ്യുന്നു (Error ഒഴിവാക്കാൻ)
+    const sessionDir = './temp_session_' + number;
+    if (await fs.exists(sessionDir)) await fs.remove(sessionDir);
+
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
 
     try {
         const { version } = await fetchLatestBaileysVersion();
@@ -28,27 +35,49 @@ app.get('/api', async (req, res) => {
                 keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
             },
             logger: pino({ level: "silent" }),
-            browser: ["ELSA-V.0.3", "Chrome", "1.0.0"]
+            browser: ["ELSA-V.0.3", "Chrome", "2.0.0"]
         });
 
-        if (!number) {
-            sock.ev.on('connection.update', async (update) => {
-                const { qr } = update;
-                if (qr && !res.headersSent) {
-                    const qrImage = await QRCode.toDataURL(qr);
-                    res.json({ qr: qrImage });
-                }
-            });
-        } else {
-            await delay(5000);
-            const cleanNumber = number.replace(/[^0-9]/g, '');
-            const code = await sock.requestPairingCode(cleanNumber);
-            if (!res.headersSent) res.json({ code: code });
+        // 🚀 Pairing Code Request
+        if (number) {
+            await delay(3000);
+            try {
+                const code = await sock.requestPairingCode(number.replace(/[^0-9]/g, ''));
+                if (!res.headersSent) res.json({ code: code });
+            } catch (pairErr) {
+                if (!res.headersSent) res.status(500).json({ error: "Pairing Request Failed" });
+            }
         }
+
         sock.ev.on('creds.update', saveCreds);
+
+        sock.ev.on('connection.update', async (update) => {
+            const { connection, lastDisconnect } = update;
+            
+            if (connection === 'open') {
+                await delay(5000);
+                // സെഷൻ ഐഡി Base64 ഫോർമാറ്റിൽ ഉണ്ടാക്കുന്നു
+                const sessionId = Buffer.from(JSON.stringify(sock.authState.creds)).toString('base64');
+                const sessionMsg = `*ELSA-V.0.3-SESSION-ID;*${sessionId}`;
+                
+                // നിങ്ങളുടെ വാട്സാപ്പ് നമ്പരിലേക്ക് (You) ഐഡി അയക്കുന്നു
+                await sock.sendMessage(sock.user.id, { text: sessionMsg });
+                console.log("Session ID Sent Successfully! ✅");
+                
+                // താൽക്കാലിക ഫയലുകൾ ക്ലീൻ ചെയ്യുന്നു
+                await delay(2000);
+                await fs.remove(sessionDir);
+            }
+
+            if (connection === 'close') {
+                const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
+                if (!shouldReconnect) await fs.remove(sessionDir);
+            }
+        });
+
     } catch (err) {
-        if (!res.headersSent) res.status(500).json({ error: "Internal Error" });
+        if (!res.headersSent) res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`ELSA SESSION HUB RUNNING ON PORT ${PORT}`));
