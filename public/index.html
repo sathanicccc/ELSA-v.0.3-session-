@@ -1,111 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELSA-V.0.3 | DUAL SESSION</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="bg-animation"></div>
-    <div class="glass-box">
-        <div class="header">
-            <div class="status-dot"></div>
-            <span class="version-tag">ELSA V.0.3 OFFICIAL</span>
-        </div>
-        
-        <h1 class="logo">ELSA-<span>MD</span></h1>
-        <p class="tagline">PREMIUM DUAL SESSION GENERATOR</p>
-
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="openTab('pairing')">PAIRING CODE</button>
-            <button class="tab-btn" onclick="openTab('qr')">QR CODE</button>
-        </div>
-
-        <div id="pairing-tab" class="tab-content active">
-            <div class="input-area">
-                <input type="number" id="phone" placeholder="917025xxxxxx" autocomplete="off">
-                <button onclick="getPairingCode()" id="gen-btn">
-                    <span id="btn-text">GET PAIRING CODE</span>
-                    <div class="spinner" id="loader"></div>
-                </button>
-            </div>
-            <div id="result-box" class="result-card">
-                <p>YOUR PAIRING CODE</p>
-                <div class="code-text" id="display-code">---- ----</div>
-                <button class="copy-btn" onclick="copyCode()">COPY CODE</button>
-            </div>
-        </div>
-
-        <div id="qr-tab" class="tab-content">
-            <div class="qr-area">
-                <button onclick="getQRCode()" id="qr-btn">
-                    <span id="qr-btn-text">GENERATE QR CODE</span>
-                    <div class="spinner" id="qr-loader"></div>
-                </button>
-                <div id="qr-result-box" class="result-card">
-                    <img id="qr-display" src="" alt="QR Code">
-                    <p class="qr-tagline">Scan with Linked Devices</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>DESIGNED BY <span class="owner">SATHAN</span></p>
-            <div class="links">
-                <a href="https://github.com/sathanicccc">GITHUB</a> • 
-                <a href="#">WHATSAPP</a>
-            </div>
-        </div>
-    </div>
-
     <script>
+        // ടാബുകൾ മാറുന്നതിനുള്ള ഫങ്ക്ഷൻ
         function openTab(tabName) {
-            var i, tabContent, tabBtns;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].classList.remove("active");
-            }
-            tabBtns = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tabBtns.length; i++) {
-                tabBtns[i].classList.remove("active");
-            }
+            const contents = document.querySelectorAll(".tab-content");
+            const buttons = document.querySelectorAll(".tab-btn");
+            
+            contents.forEach(content => content.classList.remove("active"));
+            buttons.forEach(btn => btn.classList.remove("active"));
+            
             document.getElementById(tabName + "-tab").classList.add("active");
             event.currentTarget.classList.add("active");
         }
 
+        // പെയറിംഗ് കോഡ് എടുക്കുന്നതിനുള്ള അപ്‌ഡേറ്റഡ് ഫങ്ക്ഷൻ
         async function getPairingCode() {
             const num = document.getElementById('phone').value;
             const btnText = document.getElementById('btn-text');
             const loader = document.getElementById('loader');
             const result = document.getElementById('result-box');
+            const displayCode = document.getElementById('display-code');
 
-            if(!num || num.length < 10) return alert("Enter valid number with country code!");
+            // നമ്പർ വാലിഡേഷൻ
+            if (!num || num.length < 10) {
+                return alert("രാജ്യത്തിന്റെ കോഡ് സഹിതം ശരിയായ നമ്പർ നൽകുക! (ഉദാ: 917025xxxxxx)");
+            }
 
+            // UI മാറ്റങ്ങൾ (Loading Start)
             btnText.style.display = "none";
             loader.style.display = "block";
             result.classList.remove('show');
 
             try {
+                // API-ലേക്ക് റിക്വസ്റ്റ് അയക്കുന്നു
                 const res = await fetch(`/api?number=${num}`);
                 const data = await res.json();
                 
                 loader.style.display = "none";
                 btnText.style.display = "block";
 
-                if(data.code) {
+                if (data.code) {
                     result.classList.add('show');
-                    document.getElementById('display-code').innerText = data.code;
+                    displayCode.innerText = data.code;
+                    // കോഡ് കിട്ടുമ്പോൾ ഒരു ചെറിയ വൈബ്രേഷൻ (സപ്പോർട്ട് ചെയ്യുന്ന ഫോണുകളിൽ)
+                    if (navigator.vibrate) navigator.vibrate(50);
                 } else {
-                    alert("Error: " + data.error);
+                    alert("Error: " + (data.error || "കോഡ് ലഭിച്ചില്ല. ഒന്നുകൂടി ശ്രമിക്കൂ."));
                 }
             } catch (e) {
                 loader.style.display = "none";
                 btnText.style.display = "block";
-                alert("API Connection Failed! Check Vercel Logs.");
+                alert("സർവറുമായി ബന്ധപ്പെടാൻ കഴിഞ്ഞില്ല. ഇന്റർനെറ്റ് അല്ലെങ്കിൽ Koyeb ലോഗ് പരിശോധിക്കൂ.");
             }
         }
 
+        // QR Code എടുക്കുന്നതിനുള്ള അപ്‌ഡേറ്റഡ് ഫങ്ക്ഷൻ
         async function getQRCode() {
             const btnText = document.getElementById('qr-btn-text');
             const loader = document.getElementById('qr-loader');
@@ -123,24 +70,35 @@
                 loader.style.display = "none";
                 btnText.style.display = "block";
 
-                if(data.qr) {
+                if (data.qr) {
                     result.classList.add('show');
                     qrDisplay.src = data.qr;
                 } else {
-                    alert("Error: " + data.error);
+                    alert("Error: QR കോഡ് ജനറേറ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല.");
                 }
             } catch (e) {
                 loader.style.display = "none";
                 btnText.style.display = "block";
-                alert("API Connection Failed! Check Vercel Logs.");
+                alert("QR API എറർ! സർവർ ചെക്ക് ചെയ്യുക.");
             }
         }
 
+        // കോഡ് കോപ്പി ചെയ്യാനുള്ള എളുപ്പവഴി
         function copyCode() {
             const code = document.getElementById('display-code').innerText;
-            navigator.clipboard.writeText(code);
-            alert("Code Copied!");
+            if (code === "---- ----") return;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                alert("കോഡ് കോപ്പി ചെയ്തു: " + code);
+            }).catch(err => {
+                // പഴയ ബ്രൗസറുകൾക്ക് വേണ്ടി
+                const textArea = document.createElement("textarea");
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert("കോഡ് കോപ്പി ചെയ്തു!");
+            });
         }
     </script>
-</body>
-</html>
