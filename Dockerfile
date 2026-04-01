@@ -1,8 +1,19 @@
 FROM node:20
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 8000
-CMD ["node", "index.js"]
 
+# അപ്ലിക്കേഷൻ ഡയറക്ടറി സെറ്റ് ചെയ്യുന്നു
+WORKDIR /app
+
+# പാക്കേജ് ഫയലുകൾ കോപ്പി ചെയ്യുന്നു
+COPY package*.json ./
+
+# ഡിപെൻഡൻസികൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നു
+RUN npm install
+
+# ബാക്കി എല്ലാ ഫയലുകളും കോപ്പി ചെയ്യുന്നു
+COPY . .
+
+# പോർട്ട് എക്സ്പോസ് ചെയ്യുന്നു (Koyeb-ന് വേണ്ടി 8000)
+EXPOSE 8000
+
+# ബോട്ട് സ്റ്റാർട്ട് ചെയ്യുന്നു
+CMD ["node", "index.js"]
