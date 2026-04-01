@@ -14,9 +14,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// 🟢 ഫ്രണ്ട് എൻഡ് ഫയലുകൾ കൃത്യമായി ലോഡ് ചെയ്യാൻ ഇത് സഹായിക്കും
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Koyeb Health Check ഹോം പേജിൽ തന്നെ റെസ്പോണ്ട് ചെയ്യാൻ
+// 🟢 ഹോം പേജ് ലോഡ് ചെയ്യുന്നതിനുള്ള റൂട്ട്
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -43,7 +44,7 @@ app.get('/api', async (req, res) => {
         });
 
         if (number) {
-            await delay(5000); // കണക്ഷൻ സ്റ്റേബിൾ ആകാൻ സമയം നൽകുന്നു
+            await delay(5000); 
             try {
                 const code = await sock.requestPairingCode(number.replace(/[^0-9]/g, ''));
                 if (!res.headersSent) res.json({ code: code });
@@ -55,7 +56,7 @@ app.get('/api', async (req, res) => {
         sock.ev.on('creds.update', saveCreds);
 
         sock.ev.on('connection.update', async (update) => {
-            const { connection, lastDisconnect } = update;
+            const { connection } = update;
             if (connection === 'open') {
                 await delay(5000);
                 const sessionId = Buffer.from(JSON.stringify(sock.authState.creds)).toString('base64');
@@ -64,10 +65,6 @@ app.get('/api', async (req, res) => {
                 await delay(2000);
                 await fs.remove(sessionDir);
             }
-            if (connection === 'close') {
-                const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-                if (!shouldReconnect) await fs.remove(sessionDir);
-            }
         });
 
     } catch (err) {
@@ -75,10 +72,6 @@ app.get('/api', async (req, res) => {
     }
 });
 
-// 🛠️ Koyeb സെർവർ ഓഫ് ആകാതിരിക്കാൻ Keep-Alive സെറ്റ് ചെയ്യുന്നു
 const server = app.listen(PORT, () => {
     console.log(`ELSA SESSION HUB RUNNING ON PORT ${PORT}`);
 });
-
-server.keepAliveTimeout = 60000;
-server.headersTimeout = 65000;
