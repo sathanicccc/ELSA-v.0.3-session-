@@ -20,7 +20,7 @@ app.get('/api', async (req, res) => {
     const { number } = req.query;
     if (!number) return res.status(400).json({ error: "Number is required!" });
 
-    // 🛠️ പഴയ സെഷൻ ഡാറ്റ ഉണ്ടെങ്കിൽ അത് ക്ലിയർ ചെയ്യുന്നു (Error ഒഴിവാക്കാൻ)
+    // 🛠️ പഴയ സെഷൻ ഡാറ്റ ക്ലിയർ ചെയ്യുന്നു (Error ഒഴിവാക്കാൻ)
     const sessionDir = './temp_session_' + number;
     if (await fs.exists(sessionDir)) await fs.remove(sessionDir);
 
@@ -35,12 +35,13 @@ app.get('/api', async (req, res) => {
                 keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
             },
             logger: pino({ level: "silent" }),
-            browser: ["ELSA-V.0.3", "Chrome", "2.0.0"]
+            // 🌐 Browser name Chrome എന്ന് മാറ്റിയത് വഴി Notification പ്രശ്നം പരിഹരിക്കപ്പെടും
+            browser: ["Chrome (Linux)", "", ""] 
         });
 
         // 🚀 Pairing Code Request
         if (number) {
-            await delay(3000);
+            await delay(3000); // കണക്ഷൻ സ്റ്റേബിൾ ആകാൻ 3 സെക്കൻഡ് വെയിറ്റ് ചെയ്യുന്നു
             try {
                 const code = await sock.requestPairingCode(number.replace(/[^0-9]/g, ''));
                 if (!res.headersSent) res.json({ code: code });
@@ -56,15 +57,13 @@ app.get('/api', async (req, res) => {
             
             if (connection === 'open') {
                 await delay(5000);
-                // സെഷൻ ഐഡി Base64 ഫോർമാറ്റിൽ ഉണ്ടാക്കുന്നു
                 const sessionId = Buffer.from(JSON.stringify(sock.authState.creds)).toString('base64');
                 const sessionMsg = `*ELSA-V.0.3-SESSION-ID;*${sessionId}`;
                 
                 // നിങ്ങളുടെ വാട്സാപ്പ് നമ്പരിലേക്ക് (You) ഐഡി അയക്കുന്നു
                 await sock.sendMessage(sock.user.id, { text: sessionMsg });
-                console.log("Session ID Sent Successfully! ✅");
+                console.log("Session ID Sent! ✅");
                 
-                // താൽക്കാലിക ഫയലുകൾ ക്ലീൻ ചെയ്യുന്നു
                 await delay(2000);
                 await fs.remove(sessionDir);
             }
@@ -80,4 +79,4 @@ app.get('/api', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`ELSA SESSION HUB RUNNING ON PORT ${PORT}`));
+app.listen(PORT, () => console.log(`ELSA HUB RUNNING ON PORT ${PORT}`));
